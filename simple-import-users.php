@@ -70,6 +70,7 @@ function ddiu2_management_page() {
 
 
 		$the_role = (string)$_POST['ddui_role'];
+    update_option('ddui_default_role', $the_role);
 		$delimiter = (string)$_POST['delimiter'];
 
 		// get data from form and turn into array
@@ -286,8 +287,9 @@ Log into %s at %s', $blog_name, $blog_url, $blog_name, $admin_url )
 		<?php
 			if ( !isset($wp_roles) )
 				$wp_roles = new WP_Roles();
+        $default_role = get_option('ddui_default_role');
 			foreach ($wp_roles->get_names() as $role=>$roleName) {
-				if ( $role == 'author' )
+				if ( $role == $default_role )
 					echo '<option value="'.$role.'" selected="selected">'.$roleName.'</option>';
 				else
 					echo '<option value="'.$role.'">'.$roleName.'</option>';
@@ -353,6 +355,18 @@ function ddiu2_add_new_user( $user ) {
 	
 	$uarray = split( '@', $user['email'] );
 	$user['username'] = sanitize_user( $uarray[0] );
+
+	$username_suffix = '';
+	
+	// Ooh. So if there's no user data for this login, this method returns false.
+	// If there is, we add a suffix
+	while(get_userdatabylogin($user['username'] . $username_suffix)){
+		$username_suffix++; 
+	}
+
+	if($username_suffix != ''){
+		$user['username'] = $user['username'] . $username_suffix;
+	}
 	
 	$args = array(
 		"user_login" => $user['username'],
@@ -363,7 +377,7 @@ function ddiu2_add_new_user( $user ) {
 	// create user
 	$user_id = wp_insert_user( $args );
 
-	if (!$user_id) {
+	if (is_wp_error($user_id)) {
 		$message = 'Could not create user <strong>' . $user['username'] . '</strong>';
 		$return = array( 'error' => $message );
 	} else {
