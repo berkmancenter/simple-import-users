@@ -149,7 +149,7 @@ function ddiu2_management_page() {
 			<ol>
 				<?php foreach( $results as $r ) : ?>
 					<?php if ( $r['create_success'] ) : ?>
-						<li><?php echo $r['create_success'] ?></li>
+						<li><?php echo htmlspecialchars($r['create_success']) ?></li>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</ol>
@@ -161,7 +161,7 @@ function ddiu2_management_page() {
 			<ol>
 				<?php foreach( $results as $r ) : ?>
 					<?php if ( $r['added_success'] ) : ?>
-						<li><?php echo $r['added_success'] ?></li>
+						<li><?php echo htmlspecialchars($r['added_success']) ?></li>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</ol>
@@ -173,7 +173,7 @@ function ddiu2_management_page() {
 			<ol>
 				<?php foreach( $results as $r ) : ?>
 					<?php if ( $r['error'] ) : ?>
-						<li><?php echo $r['error'] ?></li>
+						<li><?php echo htmlspecialchars($r['error']) ?></li>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</ol>
@@ -191,7 +191,7 @@ function ddiu2_management_page() {
 	?>
 
 
-	<form enctype="multipart/form-data" method="post" action="<?php echo $_SERVER["REQUEST_URI"]; ?>"  >
+	<form method="post">
 	<input type="hidden" name="info_update" id="info_update" value="true" />
 
 	<?php
@@ -235,17 +235,14 @@ Log into %s at %s', $blog_name, $blog_url, $blog_name, $admin_url )
 
 		<input type="hidden" name="delimiter" value="[|]" />
 		
-		<?php $formatinfo = '<p><strong>The data you enter MUST be in the following format:</strong><br />
+		<h3>User Data</h3>
+		<p><strong>The data you enter MUST be in the following format:</strong><br />
 			&nbsp;&nbsp;&nbsp;email<br />
 			&nbsp;&nbsp;&nbsp;email<br />
 			&nbsp;&nbsp;&nbsp;etc...<br />
-		</p>';
-?>
-		
-		<h3>User Data</h3>
-		<?php echo $formatinfo; ?>
+		</p>
 		<br />
-		<textarea name="ddui_data" cols="100" rows="12"><?php echo $retry_text ?></textarea>
+		<textarea name="ddui_data" cols="100" rows="12"><?php echo htmlspecialchars($retry_text) ?></textarea>
 		<br />
 		
 		<div style="margin: 6px 0 0 0;">
@@ -257,9 +254,9 @@ Log into %s at %s', $blog_name, $blog_url, $blog_name, $admin_url )
         $default_role = (isset(get_option('ddui_default_role'))) ? get_option('ddui_default_role') : 'subscriber';
 			foreach ($wp_roles->get_names() as $role=>$roleName) {
 				if ( $role == $default_role )
-					echo '<option value="'.$role.'" selected="selected">'.$roleName.'</option>';
+					echo '<option value="'.htmlspecialchars($role).'" selected="selected">'.htmlspecialchars($roleName).'</option>';
 				else
-					echo '<option value="'.$role.'">'.$roleName.'</option>';
+					echo '<option value="'.htmlspecialchars($role).'">'.htmlspecialchars($roleName).'</option>';
 			
 			}
 		?>
@@ -271,15 +268,15 @@ Log into %s at %s', $blog_name, $blog_url, $blog_name, $admin_url )
 		<p>You can edit the content of the email, but be sure to include the important bracketed information (like <strong>[USERNAME]</strong>), which will ensure that each member gets his or her personalized login information.</p>
 		
 		<label for="email-subject-new">Subject (sent to <strong>new</strong> accounts)</label><br />
-		<input name="email-subject-new" type="text" size="100" value="<?php echo $email_defaults['subject_new'] ?>" /><br /><br />
+		<input name="email-subject-new" type="text" size="100" value="<?php echo htmlspecialchars($email_defaults['subject_new']) ?>" /><br /><br />
 		<label for="email-subject-existing">Subject (sent to <strong>existing</strong> accounts)</label><br />
-		<input name="email-subject-existing" type="text" size="100" value="<?php echo $email_defaults['subject_existing'] ?>" /><br /><br />
+		<input name="email-subject-existing" type="text" size="100" value="<?php echo htmlspecialchars($email_defaults['subject_existing']) ?>" /><br /><br />
 		
 		
 		<label for="email-content-new">Content (sent to <strong>new</strong> accounts)</label><br />
-		<textarea name="email-content-new" cols="75" rows="6"><?php echo $email_defaults['content_new'] ?></textarea><br /><br />
+		<textarea name="email-content-new" cols="75" rows="6"><?php echo htmlspecialchars($email_defaults['content_new']) ?></textarea><br /><br />
 		<label for="email-content-all">Content (sent to <strong>all</strong> accounts)</label><br />
-		<textarea name="email-content-all" cols="75" rows="6"><?php echo $email_defaults['content_added'] ?></textarea><br /><br />
+		<textarea name="email-content-all" cols="75" rows="6"><?php echo htmlspecialchars($email_defaults['content_added']) ?></textarea><br /><br />
 	</div>
 
 
