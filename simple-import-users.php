@@ -254,7 +254,7 @@ Log into %s at %s', $blog_name, $blog_url, $blog_name, $admin_url )
 		<?php
 			if ( !isset($wp_roles) )
 				$wp_roles = new WP_Roles();
-        $default_role = get_option('ddui_default_role');
+        $default_role = (isset(get_option('ddui_default_role'))) ? get_option('ddui_default_role') : 'subscriber';
 			foreach ($wp_roles->get_names() as $role=>$roleName) {
 				if ( $role == $default_role )
 					echo '<option value="'.$role.'" selected="selected">'.$roleName.'</option>';
