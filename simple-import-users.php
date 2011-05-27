@@ -52,11 +52,7 @@ function ddiu2_management_page() {
 		
 		update_option( 'ddui_email_defaults', $new_defaults );
 
-		?><div id="message" class="updated fade"><p><strong><?php
-
-		echo "Processing Complete - View Results Below";
-
-	    ?></strong></p></div><?php
+		?><div id="message" class="updated fade"><p><strong>Processing Complete - View Results Below</strong></p></div><?php
 
 
 		//
@@ -109,7 +105,7 @@ function ddiu2_management_page() {
 			$u_errors = 0;
 
 			if (!is_email($ud['email'])) {
-				$results[] = array( 'error' => 'Invalid email address: ' . $ud['email'], 'ud' => $ud );
+				$results[] = array( 'error' => 'Invalid email address: ' . htmlspecialchars($ud['email']), 'ud' => $ud );
 				$u_errors++;
 			} else {
 				$results[] = ddiu2_process_user( $ud );
@@ -149,7 +145,7 @@ function ddiu2_management_page() {
 			<ol>
 				<?php foreach( $results as $r ) : ?>
 					<?php if ( $r['create_success'] ) : ?>
-						<li><?php echo htmlspecialchars($r['create_success']) ?></li>
+						<li><?php echo $r['create_success'] ?></li>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</ol>
@@ -161,7 +157,7 @@ function ddiu2_management_page() {
 			<ol>
 				<?php foreach( $results as $r ) : ?>
 					<?php if ( $r['added_success'] ) : ?>
-						<li><?php echo htmlspecialchars($r['added_success']) ?></li>
+						<li><?php echo $r['added_success'] ?></li>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</ol>
@@ -173,7 +169,7 @@ function ddiu2_management_page() {
 			<ol>
 				<?php foreach( $results as $r ) : ?>
 					<?php if ( $r['error'] ) : ?>
-						<li><?php echo htmlspecialchars($r['error']) ?></li>
+						<li><?php echo $r['error'] ?></li>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</ol>
@@ -342,10 +338,10 @@ function ddiu2_add_new_user( $user ) {
 	$user_id = wp_insert_user( $args );
 
 	if (is_wp_error($user_id)) {
-		$message = 'Could not create user <strong>' . $user['username'] . '</strong>';
+		$message = 'Could not create user <strong>' . htmlspecialchars($user['username']) . '</strong>';
 		$return = array( 'error' => $message );
 	} else {
-		$message = 'Username <strong>' . $user['username'] . '</strong> was successfully created.';
+		$message = 'Username <strong>' . htmlspecialchars($user['username']) . '</strong> was successfully created.';
 		$return = array( 'create_success' => $message );
 		
 		$mailinfo = $args;
@@ -417,7 +413,7 @@ function ddiu2_add_existing_user( $user_id, $ud, $mailinfo = false ) {
 	
 	wp_mail( $to, $subject, $mail_message );
 
-	$message = 'Username <strong>' . $ud['username'] . '</strong> has been added successfully to the blog';
+	$message = 'Username <strong>' . htmlspecialchars($ud['username']) . '</strong> has been added successfully to the blog';
 	return array( 'added_success' => $message );
 }
 
