@@ -44,10 +44,10 @@ function ddiu2_management_page() {
 
 	if (isset($_POST['info_update'])) {
 		$new_defaults = array(
-			'subject_new' => $_POST['email-subject-new'],
-			'subject_existing' => $_POST['email-subject-existing'],
-			'content_new' => $_POST['email-content-new'],
-			'content_added' => $_POST['email-content-all']
+			'subject_new' => stripslashes($_POST['email-subject-new']),
+			'subject_existing' => stripslashes($_POST['email-subject-existing']),
+			'content_new' => stripslashes($_POST['email-content-new']),
+			'content_added' => stripslashes($_POST['email-content-all'])
 		);
 		
 		update_option( 'ddui_email_defaults', $new_defaults );
@@ -59,15 +59,14 @@ function ddiu2_management_page() {
 		// START Processing
 		//
 
-
-		$the_role = (string)$_POST['ddui_role'];
+		$the_role = stripslashes($_POST['ddui_role']);
     update_option('ddui_default_role', $the_role);
-		$delimiter = (string)$_POST['delimiter'];
+		$delimiter = stripslashes($_POST['delimiter']);
 
 		// get data from form and turn into array
 		$u_temp = array();
-		if(trim((string)$_POST["ddui_data"]) != ""){
-			$u_temp = array_merge($u_temp, ddiu2_fieldParseFunction(((string) ($_POST["ddui_data"]))));
+		if(trim(stripslashes($_POST["ddui_data"])) != ""){
+			$u_temp = array_merge($u_temp, ddiu2_fieldParseFunction(stripslashes($_POST["ddui_data"])));
 		}
 		else{
 			$result .= "<p>No names entered in field.</p>";
@@ -375,9 +374,9 @@ function ddiu2_add_existing_user( $user_id, $ud, $mailinfo = false ) {
 
 	// Subjects
 	// The subject of emails to newly created accounts
-	$new_account_subject = $_POST['email-subject-new'];
+	$new_account_subject = stripslashes($_POST['email-subject-new']);
 	// The subject of emails to existing members who've been added to the blog
-	$newly_added_subject = $_POST['email-subject-existing']; 
+	$newly_added_subject = stripslashes($_POST['email-subject-existing']); 
 	
 	$subject = ( $mailinfo ) ? $new_account_subject : $newly_added_subject;
 
@@ -387,7 +386,7 @@ function ddiu2_add_existing_user( $user_id, $ud, $mailinfo = false ) {
 	
 	// Newly created users get the following text at the top of their email
 	if ( $mailinfo ) {
-		$raw_mail_message = $_POST['email-content-new'];
+		$raw_mail_message = stripslashes($_POST['email-content-new']);
 		
 		$search = array(
 			'[USERNAME]',
@@ -405,7 +404,7 @@ function ddiu2_add_existing_user( $user_id, $ud, $mailinfo = false ) {
 	}	
 	
 	// Both existing and newly created users get the following
-	$newly_added_message = $_POST['email-content-all'];
+	$newly_added_message = stripslashes($_POST['email-content-all']);
 	
 	$mail_message .= $newly_added_message;
 
