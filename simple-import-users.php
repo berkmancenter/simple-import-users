@@ -23,11 +23,6 @@ function ddiu2_add_management_pages() {
 	}
 }
 
-#can specify how to parse submitted file by editing this function
-function ddiu2_fileParseFunction($filename){
-	return file($filename);
-}
-
 #modify this function to specify how to parse text in field
 #could change format or add validation
 function ddiu2_fieldParseFunction($text){
@@ -82,34 +77,6 @@ function ddiu2_management_page() {
 			$result .= "<p>No names entered in field.</p>";
 		}
 		
-		if ($_FILES['ddui_file']['error'] != UPLOAD_ERR_NO_FILE){#Earlier versions of PHP may use $HTTP_POST_FILES
-			$file = $_FILES['ddui_file'];
-			if($file['error']){
-				$result .= '<h4 style="color: #FF0000;">Errors!</h4><p>';
-				switch ($file['error']){
-					case UPLOAD_ERR_INI_SIZE:
-						$result .= "File of ".$file['size']."exceeds max size ".upload_max_filesize;
-						break;
-					case UPLOAD_ERR_FORM_SIZE:
-						$result .= "File of ".$file['size']."exceeds max size ".upload_max_filesize;
-						break;
-					case UPLOAD_ERR_PARTIAL:
-						$result .= "File not fully uploaded";
-						break;
-					default:
-				}
-				$result.='.</p>';
-			}
-			elseif(!is_uploaded_file($file['tmp_name'])){
-				$result = "File ".$file['name']." was not uploaded via the form.";
-			}
-			else{ #should be ok to read the file now
-				$u_temp = array_merge($u_temp, ddiu2_fileParseFunction($file['tmp_name']));
-			}
-		} else{
-			$result .= "<p>No file submitted.</p>";
-		}
-
 		$u_data = array();
 		$i = 0;
 
