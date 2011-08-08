@@ -295,7 +295,7 @@ function ddiu2_process_user( $ud ) {
 	} else {
 		// Add existing user
 		$ud['username'] = $user_by_email->user_login;
-		$return = ddiu2_add_existing_user( $user_by_email->ID, $ud, false );
+		$return = ddiu2_add_user( $user_by_email->ID, $ud, false );
 	}
 	
 	$return['ud'] = $ud;
@@ -345,7 +345,7 @@ function ddiu2_add_new_user( $user ) {
 		
 		$mailinfo = $args;
 		
-		$added = ddiu2_add_existing_user( $user_id, $user, $mailinfo );
+		$added = ddiu2_add_user( $user_id, $user, $mailinfo );
 		
 		if ( isset( $added['added_success'] ) )
 			$return['added_success'] = $added['added_success'];
@@ -357,16 +357,24 @@ function ddiu2_add_new_user( $user ) {
 }
 
 
-function ddiu2_add_existing_user( $user_id, $ud, $mailinfo = false ) {
+function ddiu2_add_user( $user_id, $ud, $mailinfo = false ) {
 	global $current_blog, $the_role;
 	
-	// set role
-	if ( $ud['role'] )
-		$role = $ud['role'];
-	else
-		$role = $the_role;
-	
-	add_user_to_blog( $current_blog->blog_id, $user_id, $role );
+	$message = '';
+
+	if(is_user_member_of_blog($user_id,$current_blog->blog_id)){
+		$message = 'Username <strong>' . htmlspecialchars($ud['username']) . '</strong> is already a member of this blog.';
+	} else {
+		// set role
+		if ( $ud['role'] )
+				$role = $ud['role'];
+		else
+				$role = $the_role;
+
+		add_user_to_blog( $current_blog->blog_id, $user_id, $role );
+
+		$message = 'Username <strong>' . htmlspecialchars($ud['username']) . '</strong> has been added successfully to the blog';
+	}
 
 	// Send the welcome mail
 	$blog_name = get_bloginfo( 'name' );
@@ -377,42 +385,40 @@ function ddiu2_add_existing_user( $user_id, $ud, $mailinfo = false ) {
 	$new_account_subject = stripslashes($_POST['email-subject-new']);
 	// The subject of emails to existing members who've been added to the blog
 	$newly_added_subject = stripslashes($_POST['email-subject-existing']); 
-	
+
 	$subject = ( $mailinfo ) ? $new_account_subject : $newly_added_subject;
 
 	// The content of the mail
-	
+
 	$mail_message = '';
-	
+
 	// Newly created users get the following text at the top of their email
 	if ( $mailinfo ) {
 		$raw_mail_message = stripslashes($_POST['email-content-new']);
-		
+
 		$search = array(
-			'[USERNAME]',
-			'[PASSWORD]'
-		);
-		
+						'[USERNAME]',
+						'[PASSWORD]'
+					   );
+
 		$replace = array(
-			$ud['username'],
-			$ud['password'],
-		);
-		
+						$ud['username'],
+						$ud['password'],
+						);
+
 		$mail_message .= str_replace( $search, $replace, $raw_mail_message );;
 
 		$mail_message = apply_filters( 'ddiu_bp_filter', $mail_message, $user_id );
 	}	
-	
+
 	// Both existing and newly created users get the following
 	$newly_added_message = stripslashes($_POST['email-content-all']);
-	
+
 	$mail_message .= $newly_added_message;
 
 	$to = $ud['email'];
-	
-	wp_mail( $to, $subject, $mail_message );
 
-	$message = 'Username <strong>' . htmlspecialchars($ud['username']) . '</strong> has been added successfully to the blog';
+	wp_mail( $to, $subject, $mail_message );
 	return array( 'added_success' => $message );
 }
 
